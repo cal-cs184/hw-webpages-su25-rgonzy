@@ -20,8 +20,15 @@
 				display: inline-block;
 			}
 
+			h2 {
+				color: rgb(255, 255, 255);
+			}
+
 			body {
 				font-family: 'Inter', sans-serif;
+				text-align: center;
+				color: #d0f5f4;
+				background-color: #000000;
 			}
 		</style>
 	</head>
@@ -38,60 +45,49 @@
 
 		Link to GitHub repository:  <a href="https://github.com/cal-cs184/hw-rasterizer-rgonz">Github Repo</a>
 
-		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
-
 		<!--
 		We've already added one heading per task, to make your write-up as navigable when grading. Please fit your write-up within these sections!
 		-->
 
 		<h2>Overview</h2>
+
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		To rasterize triangles, I began by first writing the point-in-triangle test. I stored the value of the test in three variables labeled loc1, loc2, and loc3. Then, using an if statement, I checked the values to see where the point was. 
-		If it was on or in the triangle, I filled the pixel. To fill in the whole triangle, I wrote a double for loop that had y on the outside and x on the inside. To not have to check every pixel on the screen, I had a boolean that when the for loop 
-		landed in the triangle, was true. Once the for loop left the triangle, it was set to false and the inside loop was broken to go onto the next y level.
+
+		To rasterize triangles, I began by first writing the point-in-triangle test. I stored the value of the test in three variables. Then, using an if statement, I checked the values to see where the point was. 
+		If it was on or in the triangle, I filled the pixel. To fill in the whole triangle, I wrote a double for loop that went from [0, maxY] and [0, maxX]. To not have to check every pixel on the screen, 
+		I had a boolean that when the for loop landed in the triangle, was true. Once the for loop left the triangle, it was set to false and the inside loop was broken to go onto the next y level. This  
+		early-exit method can only reduce the number of tests; in the absolute worst case it would do the same number of checks as the “check all samples in the box” algorithm, so its complexity is no worse.
 		
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
+		<figure>
+			<img src="Task1.png" alt="Task1" style="width:50%"/>
+			<figcaption>Here, you can see an extreme case of aliasing. This occurs because the tip of the triangle just barely escapes the points I was checking on the pixels.</figcaption>
+		</figure>
 		
 		<h2>Task 2: Antialiasing by Supersampling</h2>
+
 		I implemented Supersampling by first taking the sample buffer and making (width * sampling rate x height * sampling rate).
-		Then in rasterize_triangle, I divided the pixel into sampling rate x sampling rate. With this, I could then draw into the 
-		sample buffer. I encountered a very big wall though when I began trying to resolve the sample buffer into the frame buffer.
-		At first, I tried to just add up the number of sub-pixels that were hit in the pixel to then divide by the sampling rate to
-		get the percentage; but I almost instantly got stuck on what to do with the number I got. So I restarted, and eventually got 
-		system to add up the values at those individual values to take an average over the square sampling rate (because this is what
-		the pixel was divided into). Then I took these individual r, g, and b values to translate them into the rgb_framebuffer_target.
+		Then during triangle rasterization, During triangle rasterization, each pixel is divided into a grid of sample_rate * sample rate sub-pixels. With this, I could then draw into the 
+		sample buffer by testing the center of the sub-pixels. 
+		<br>
+		Once every sub-pixel is shaded, the challenge is to collapse the sample buffer back to the original framebuffer. My initial 
+		approach was to count how many sub-pixels “hit” the triangle and divide by the total number of sub-pixels to get a coverage 
+		ratio—but this left me unsure how to translate that into RGB color values. I revised my method to compute the average of the 
+		red, green, and blue channels across all sub-pixels in each pixel’s block. Concretely, for each pixel at (x, y), I sum the R, 
+		G, and B components of its sample_rate² sub-pixels and then divide each sum by sample_rate². Those averaged channels become the 
+		final color written into rgb_framebuffer_target.
 		<br>
 		<br>
-		Supersampling is useful because when we convert the continuous scene to a discrete screen, it's very common to get jaggies and 
+		I encountered a very big wall though when I began trying to resolve the sample buffer into the frame buffer. After all the pixels 
+		were shaded, I initailally tried to count how many sub-pixels were "hit" in the triangle and divide by the total number of sub-pixels
+		to get a coverage ratio-but I was left stuck at how to use the ratio with RBG color values. I eventually revised my method to compute the 
+		average of the RBG channels across all sub-pixels in each pixel's block. Essentially, for each pixel at (x, y), I sum the R, G, and B
+		components of its sample_rate^2 sub-pixels and then divide each sum by the sample_rate^2. These averaged values became what I passed in as the
+		final color in the rgb_framebuffer_target.
+		<br>
+		<br>
+		Supersampling is useful because when we convert the high-detail continuous scene to a discrete screen of pixels, it's very common to get jaggies and 
 		disconnected pixels that are part of the same shape. Supersampling allows us to to sample these otherwise skipped points without
 		having to increase the resolution. 
 		<br>
@@ -100,75 +96,164 @@
 		is because the triangle got so fine/thin in that corner that it slipped through the pixels. With the supersampling though, we were
 		able to capture that otherwise lost sampling. I would argue even at 4x sampling, the overall image looks good. You only begin to 
 		see those issues when you zoom in.
+		<br>
+		<br></r>
+		<div>
+			<table style="margin: 0 auto; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="Task2.1.png" width="300px"/>
+				  <figcaption>1x Supersampling</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="Task2.2.png" width="300px"/>
+				  <figcaption>4x Supersampling</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="Task2.3.png" width="300px"/>
+				  <figcaption>16x Supersampling</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Task 3: Transforms</h2>
+
 		This one was pretty straight forward, I just implemented the matrices as they are defined. Below, I tried to make the robot look like it's doing the wave.
 
+		<figure>
+			<img src="Task3.png" alt="Task3.png" style="width:50%"/>
+			<figcaption>His neck is also doing the wave.</figcaption>
+		</figure>
+
 		<h2>Task 4: Barycentric coordinates</h2>
-		Berycentric coordinates is a way to get an interpolated value by taking the weight of each vertex. The distance from the vertex determines how much that value
+
+		Berycentric coordinates provide a way to interpolate values inside a trianglge by taking the weight of each vertex. The distance from the vertex determines how much influence
+		that vertex has on the interpolated value.
 		(whatever value we may be trying to interpolate). 
 		<br>
 		<br>
 		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
+			<img src="Task4.1.png" alt="Task4.1" style="width:50%"/>
 			<figcaption>How I think of berycentric cooridnates.</figcaption>
 		</figure>
 		<br>
 		<br>
-		Above, you see that each vertex corresponds to a color and the distance to that vertex determines how much of that color is at the point we are looking at. 
-		Now this is an oversimplification because the weights are actually derived from the areas, but to me this is a much easier way to process the idea.
+		In the example above, you see that each vertex corresponds to a color (red, green, and blue) and the distance to that vertex determines how much of that color is at the point we are looking at. 
+		Although this example skips over the actual computation (weights are actually dependent on the areas of sub-triangles) it offers a simple model for understanding interpolation.
 
 		<figure>
-			<img src="lion.jpg" alt="Lion" style="width:50%"/>
+			<img src="Task4.2.png" style="width:50%"/>
 			<figcaption>The final product.</figcaption>
 		</figure>
 
 		Before I had the code all right, I was also able to generate a lot of errors that kind of look like some type of glitch art.
-		
+		<br>
+		<br>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td>
+				  <img src="Task4.3.png" width="200px"/>
 				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				<td>
+				  <img src="Task4.4.png" width="200px"/>
 				</td>
 			  </tr>
 			  <tr>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="Task4.6.png" width="200px"/>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+		Texture mapping applies an image(texture) to a triangle by converting screen-space coordinates into texture (UV) coordinates. I 
+		did this by first computing the berycentric weights and applying them to the UV coordinates. After scaling them, I can pass them into
+		either the nearest sampling method or the bilinear sampling method. For nearest sampling, we just take the UV coordinates and normalize 
+		them for the screen by multipling them by the width and height respectively. With these values, we can just round them to get the texel color.
+		For bilinear sampling we normalize/round them, but then fetch the four closest texels around that point and preform two linear interpolations to blend the 
+		colors.
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="Task5.1.png" width="400px"/>
+				  <figcaption>1x Supersampling & Nearest Pixel</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="Task5.2.png" width="400px"/>
+				  <figcaption>1x Supersampling & Bilinear</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="Task5.3.png" width="400px"/>
+				  <figcaption>16x Supersampling & Nearest Pixel</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="Task5.4.png" width="400px"/>
+				  <figcaption>16x Supersampling & Bilinear</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		As you can see, the bilinear filtering smoothed out the line when there was no supersampling, but by the time 16x supersampling was turned on,
+		the difference is neglible. What you can't tell from these pictures though is that the difference between the first two was about 10 seconds. The 
+		last two on the other hand took around 15 and 20+ (I lost count at some point, but it took forever) minutes respectively to load. Although the 16x supersampling looks incredibly smooth, I would choose
+		to use the bilinear filtering for almost every situation.
+		<br>
+		<br>
+		Nearest pixel works well to just get the general texture on the screen while the bilinear filtering will go the extra step and smooth it out for you.
+		The biggest difference comes when theres lots of contrast in the picture (like the white line being right in the middle of the green land).
 
 		<h2>Task 6: "Level Sampling" with mipmaps for texture mapping</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<h2>(Optional) Task 7: Extra Credit - Draw Something Creative!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Mipmap (level) sampling is a technique that reduces aliasing and improves overall image quality by chooseing an appropriately filter version of a texture based on its screen-space footprint (area). 
+		A mipmap stores the texture plus progressively smaller, prefiltered copies. The idea is that when triangles have a small footprint, you would want a smaller resolution texture
+		because at that scale, loading something high res would give you aliasing. I implemented it by calculating the derivative to find the level. With this value, 
+		you can pass it as it is (corresponding to Nearest D) or lerp the sample at this point and at the next point to get a blend of the two 
+		(corresponding to Linear interpolation).
 
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="Task6.1.png" width="400px"/>
+				  <figcaption>No Antialiasing</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="Task6.2.png" width="400px"/>
+				  <figcaption>Trilinear</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="Task6.3.png" width="400px"/>
+				  <figcaption>Nearest Level Sampling, 4x Supersampling & Bilinear Texture</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="Task6.4.png" width="400px"/>
+				  <figcaption>9x Supersampling</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		<br>
+
+		As you can see, the various combinations produce similar images but with vastly different render times. Without any antialiasing, rendering is fastest 
+		but yields extreme moiré patterns. Using trilinear sampling reduces these to minor artifacts, though it's about ten times slower than no antialiasing. 
+		Next, I tried nearest-level sampling with 4x supersampling and bilinear texture filtering. Although this is 2 times slower than trilinear alone, it offers 
+		the best balance of quality and speed. 9x supersampling achieves the same visual result but takes over twenty times longer.
+
 		</div>
 	</body>
 </html>

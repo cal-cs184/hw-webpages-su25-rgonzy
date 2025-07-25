@@ -1,168 +1,421 @@
 <html>
-	<head>
-		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-		<style>
-			h1 {
-				text-align: center;
-			}
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      h1 {
+        text-align: center;
+      }
 
-			.container {
-				margin: 0 auto;
-				padding: 60px 20%;
-			}
+      .container {
+        margin: 0 auto;
+        padding: 60px 20%;
+      }
 
-			figure {
-				text-align: center;
-			}
+      figure {
+        text-align: center;
+      }
 
-			img {
-				display: inline-block;
-			}
+      img {
+        display: inline-block;
+      }
 
-			h2 {
-				color: rgb(255, 255, 255);
-			}
+      h1 {
+        color: rgb(255, 255, 255);
+      }
 
-			body {
-				font-family: 'Inter', sans-serif;
-				text-align: center;
-				color: #d0f5f4;
-				background-color: #000000;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 2 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+      h2 {
+        color: rgb(255, 255, 255);
+      }
 
-		<br>
+      h3 {
+        color: rgb(171, 241, 255);
+      }
 
-		Link to webpage: <a href="https://cal-cs184.github.io/hw-webpages-su25-rgonzy/hw1/index.html">Webpage</a>
-		
-		<br>
+      body {
+        font-family: "Inter", sans-serif;
+        text-align: center;
+        color: #f3d0f5;
+        background-color: #000000;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>CS184/284A Spring 2025 Homework 2 Write-Up</h1>
+      <div style="text-align: center">Names: Ruben Gonzalez</div>
 
-		Link to GitHub repository:  <a href="https://github.com/cal-cs184/hw-rasterizer-rgonz">Github Repo</a>
+      <br />
 
-		<figure>
-			<img src="teapot.png" alt="Teapot" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
+      Link to webpage:
+      <a
+        href="https://cal-cs184.github.io/hw-webpages-su25-rgonzy/hw2/index.html"
+        >Webpage</a
+      >
 
-		<!--
-		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
+      <br />
 
-		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+      Link to GitHub repository:
+      <a href="https://github.com/cal-cs184/hw2-meshedit-rgonzy">Github Repo</a>
 
-		<h2>Section I: Bezier Curves and Surfaces</h2>
+      <h2>Overview</h2>
+      In this homework, I implemented Bézier curves and surfaces to smooth out
+      rough meshes. Afterwards, I added Phong shading and mesh upsampling using
+      edge-flip and edge-split operations. I enjoyed how both processes boiled
+      down to pointer reassignments and element creations. I also thought
+      upsampling would be a lot simpler, but I quickly learned otherwise.
 
-		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		<p>The de Casteljau algorithm is >..! and I implemented it by >..!</p>
+      <h2>Section I: Bezier Curves and Surfaces</h2>
 
+      <h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
+      <p>
+        The de Casteljau algorithm is a recursive method used to evaluate Bézier
+        curves. The idea is that you take a set of control points and
+        interpolate between them using linear interpolations until only one
+        point remains. I implemented the algorithm by creating a vector of
+        Vector2Ds and allocating its size to be one less than the number of
+        input points. Although it's usually implemented recursively, I chose an
+        iterative approach: in each pass I performed all the lerps and stored
+        the results in that vector.
+      </p>
 
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="task1.1.png" width="400px"/>
-				  <figcaption>First Step</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="task1.2.png" width="400px"/>
-				  <figcaption>Second Step</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="task1.3.png" width="400px"/>
-				  <figcaption>Third Step</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="task1.4.png" width="400px"/>
-				  <figcaption>Fourth Step</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="task1.5.png" width="400px"/>
-				  <figcaption>Fifth Step</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="task1.7.png" width="400px"/>
-				  <figcaption>Final Step</figcaption>
-				</td>
-			  </tr>
-			</table>
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td style="text-align: center">
+              <img src="task1.1.png" width="200px" />
+              <figcaption>First Step</figcaption>
+            </td>
+            <td style="text-align: center">
+              <img src="task1.2.png" width="200px" />
+              <figcaption>Second Step</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: center">
+              <img src="task1.3.png" width="200px" />
+              <figcaption>Third Step</figcaption>
+            </td>
+            <td style="text-align: center">
+              <img src="task1.4.png" width="200px" />
+              <figcaption>Fourth Step</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align: center">
+              <img src="task1.5.png" width="200px" />
+              <figcaption>Fifth Step</figcaption>
+            </td>
+            <td style="text-align: center">
+              <img src="task1.7.png" width="200px" />
+              <figcaption>Final Step</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-			<br>
-			<br>
+      <br />
+      <br />
 
-			<p>Here you can see >..!</p>
+      <p>Here you can see the various steps of the algorithm taking place.</p>
 
-			<figure>
-			<img src="task1.8.gif" style="width:50%"/>
-			<figcaption>Stepping Through parameter "t"</figcaption>
-		</figure>
+      <figure>
+        <img src="task1.8.gif" style="width: 50%" />
+        <figcaption>Stepping Through parameter "t"</figcaption>
+      </figure>
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="teapot.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
+      <h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
+      <p>
+        The de Casteljau algorithm extends to Bézier surfaces by applying it in
+        both parametric directions (u and v) on an nxn grid of control points.
+        First, you perform the algorithm along the u direction on each row of
+        control points, which yields n intermediate points defining a Bézier
+        curve in u. Then, you apply de Casteljau in the v direction to those
+        intermediate points to obtain the final point on the surface at (u, v).
+      </p>
+      <p>
+        I implemented it by first writing the complete de Casteljau algorithm
+        using my step function from part 1. This function repeatedly invokes
+        step to interpolate the points until only one point remains on the
+        curve. Next, I created a surface function that applies this algorithm in
+        the u direction to produce a vector of intermediate points. Finally, the
+        surface function returns the result of interpolating those intermediate
+        points using the v parameter.
+      </p>
 
-		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <figure>
+        <img src="task2.1.png" style="width: 65%" />
+        <figcaption>Teapot w/ Bezier Surfaces</figcaption>
+      </figure>
 
-		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+      <h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
-		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <h3>Part 3: Area-weighted vertex normals</h3>
+      <p>
+        Initially, I attempted to calculate normals at the vertices directly,
+        but then I discovered that each face provides its own normal function.
+        To compute a normal, I retrieve one of its halfedges, follow its twin to
+        the corresponding face, add that face's normal to a running Vector3D
+        sum, and repeat this process around the vertex until I return to the
+        starting halfedge. Finally, since Vector3D offers a normalize method, I
+        normalize the accumulated sum and return the result.
+      </p>
 
-		<h3>Part 4: Edge flip</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td style="text-align: center">
+              <img src="task3.1.png" width="300px" />
+              <figcaption>Without the Phong Shaders</figcaption>
+            </td>
+            <td style="text-align: center">
+              <img src="task3.2.png" width="300px" />
+              <figcaption>With the Phong Shaders</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-		<h3>Part 5: Edge split</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <h3>Part 4: Edge flip</h3>
+      I began by drawing a diagram of a pair of triangles, labeling all faces,
+      halfedges, edges, and vertices. Next, I sketched the edge-flipped pair of
+      triangles, again labeling every component and noting the changes. Then I
+      stored each element from the original triangles in variables and
+      reassigned them according to my notes. Fortunately, it worked the first
+      time, so I only needed to simplify the code by removing any unchanged or
+      unused variables.
 
-		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td style="text-align: center">
+              <img src="task4.1.png" width="300px" />
+              <figcaption>Pre-Flips</figcaption>
+            </td>
+            <td style="text-align: center">
+              <img src="task4.2.png" width="300px" />
+              <figcaption>Post-Flips</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
 
-		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      <h3>Part 5: Edge split</h3>
+      <p>
+        I implemented the edge split by drawing the before-and-after pairs of
+        triangles and tracking every change. I also noted which new elements
+        needed to be created. Then, in my code, I assigned all existing
+        components to variables, created the new elements, and reassigned
+        everything accordingly. Below, you can see my drawings.
+      </p>
 
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
-		</div>
-	</body>
+      <figure>
+        <img src="task5.5.png" style="width: 65%" />
+        <figcaption>My Drawings</figcaption>
+      </figure>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="task5.4.png" width="400px" />
+              <figcaption>Teapot w/ a Mix of Flips and Splits</figcaption>
+            </td>
+            <td>
+              <img src="task5.2.png" width="400px" />
+              <figcaption>Teapot w/ Some Splits</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <img src="task5.3.png" width="400px" />
+            <figcaption>Pre Anything</figcaption>
+          </tr>
+        </table>
+      </div>
+
+      <p>
+        The only debugging I needed was fixing a hole that consistently appeared
+        on the left. It turned out I'd missed a single assignment, which I
+        spotted quickly.
+      </p>
+
+      <figure>
+        <img src="task5.1.png" style="width: 65%" />
+        <figcaption>Hole After Splitting</figcaption>
+      </figure>
+
+      <h3>Part 6: Loop subdivision for mesh upsampling</h3>
+      <p>
+        The first step in upsampling was computing the new positions for each
+        vertex. I iterated over all vertices in the mesh and performed the
+        following steps: <br /><br />
+        1. Determine the weight uu based on the vertex degree n <br />
+        2. Sum the positions of all neighboring vertices by traversing its
+        incident halfedges. <br />
+        3. Compute the new position using \[ 'np' = ((1 - n * u) * pos) + (u *
+        sum)\] <br />
+        4. Set isNew to false.<br />
+      </p>
+
+      <p>
+        Next, I implemented edge splitting by iterating over all edges and
+        performing the following steps: <br />
+        1: Skip any edge marked isNew to avoid splitting edges that were just
+        created. <br />
+        2: Retrieve all vertices involved in the split. <br />
+        3: If the edge was a boundary, the midpoint would be at
+        <code>mid = 0.5 * (v1->position + v2->position)</code>, otherwise it
+        would be at the normal
+        <code
+          >mid = (v1->position + v2->position) * (3.0f / 8.0f) + (v3->position +
+          v4->position) * (1.0f / 8.0f)</code
+        >. <br />
+        4: Then I would set isNew to false, add the edge to a vector, and redo
+        until we hit all edges. <br />
+        5: Once all edges are collected, run the split on each one, assign the
+        stored mid position to the newly created vertex, and record each
+        old-to-new edge pair in another vector.
+      </p>
+
+      <p>
+        With the edges, we could now flip all of them through iteration.
+        Although they should be the ones that connect an old and new vertex, I
+        still had an if statement that checked if they really were doing that.
+        If it was true, I would run flip edge on the edge.
+      </p>
+
+      <p>
+        Finally, I updated each vertex's position to the value stored in its
+        newPosition variable. To prepare for a subsequent upsampling pass, I
+        also set each vertex's isNew flag to false.
+      </p>
+
+      <p>
+        My most challenging bugs arose in the vertex-position assignment step.
+        Every time I upsampled, the mesh became a mess, even though I knew the
+        other components were correct. First, I implemented a boundary checker
+        that calculate the position as:
+        <code>ver->newPosition = 0.75 * ver->position + 0.125 * tot</code>
+        if the vertex lay on a boundary. When that didn’t help, I wasn’t sure
+        the checker was working, so I asserted that boundary vertices have
+        exactly two neighbors. I was stuck for a while because it still failed.
+        Eventually, I discovered that my calculation of u was off. I replaced my
+        earlier conditional logic with a single expression:
+        <code> double u = (deg == 3 ? 3.0 / 16.0 : 3.0 / (8.0 * deg)) </code>
+        and even though it technially did the exact same thing, it finally
+        worked.
+      </p>
+
+      <figure>
+        <img src="task6.3.png" style="width: 65%" />
+        <figcaption>Torus Pre Split</figcaption>
+      </figure>
+      <figure>
+        <img src="task6.2.png" style="width: 65%" />
+        <figcaption>Torus Post Split</figcaption>
+      </figure>
+
+      <p>
+        In the pictures above, you can see that after a few splits, the top of
+        the torus appears thinner than the rest of the shape. In fact, all the
+        original faces vary—thin at the top and thick at the bottom. Moreover,
+        the post-split icosahedron still retains slightly visible corners (for
+        example, on the left). I fixed this by selecting a vertex and reducing
+        its degree with edge flips and additional splits before upsampling.
+      </p>
+
+      <figure>
+        <img src="task6.4.png" style="width: 65%" />
+        <figcaption>Icosahedron Pre Split</figcaption>
+      </figure>
+      <figure>
+        <img src="task6.5.png" style="width: 65%" />
+        <figcaption>Icosahedron Post Split</figcaption>
+      </figure>
+      <figure>
+        <img src="task6.12.png" style="width: 65%" />
+        <figcaption>Icosahedron Post Split & Fixed</figcaption>
+      </figure>
+
+      <br />
+      <br />
+
+      <figure>
+        <img src="task6.7.png" style="width: 65%" />
+        <figcaption>Cube Pre Split</figcaption>
+      </figure>
+      <figure>
+        <img src="task6.1.png" style="width: 85%" />
+        <figcaption>Cube Post Split</figcaption>
+      </figure>
+
+      <p>
+        Above, you can see the cube after a few splits. It may look lopsided
+        because the cube;s edges are unevenly divided. In the table, you can see
+        that the edges on both sides aren;t oriented the same way, which causes
+        the cube to become progressively biased toward one side with each split.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="task6.8.png" width="400px" />
+              <figcaption>
+                Front of Cube <br />
+                (notice the pattern of the edges)
+              </figcaption>
+            </td>
+            <td>
+              <img src="task6.9.png" width="400px" />
+              <figcaption>
+                Back of Cube <br />
+                (very different pattern now)
+              </figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="task6.10.png" width="400px" />
+              <figcaption>
+                Front of Cube <br />
+                (pattern fixed)
+              </figcaption>
+            </td>
+            <td>
+              <img src="task6.11.png" width="400px" />
+              <figcaption>
+                Back of Cube <br />
+                (pattern fixed)
+              </figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <figure>
+        <img src="task6.6.png" style="width: 85%" />
+        <figcaption>Fixed Cube Post Split</figcaption>
+      </figure>
+
+      <p>
+        As you can see, after I ensured both sides of the cube had the same edge
+        pattern, the cube became perfectly symmetric. This is because all
+        operations now apply identically on both sides.
+      </p>
+    </div>
+  </body>
 </html>

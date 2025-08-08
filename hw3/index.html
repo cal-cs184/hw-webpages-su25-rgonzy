@@ -190,76 +190,119 @@
         primitives' centroids and pick the split plane at its midpoint. I
         partition the primitives into two groups based on which side of this
         plane their centroid falls on and pass the midpoint iterator into the
-        left and right recursive calls. Finally, to avoid edge cases when
-        all centroids lie on one side, I fall back to dividing the list evenly
-        in half.
+        left and right recursive calls. Finally, to avoid edge cases when all
+        centroids lie on one side, I fall back to dividing the list evenly in
+        half.
       </p>
 
       <figure>
-        <img
-          src="part2.4.png"
-          width="500px"
-        />
+        <img src="part2.4.png" width="500px" />
         <figcaption>Cow generated using BVH</figcaption>
       </figure>
 
       <figure>
-        <img
-          src="part2.3.png"
-          width="500px"
-        />
+        <img src="part2.3.png" width="500px" />
         <figcaption>Dragon generated using BVH</figcaption>
       </figure>
 
       <p>
-        The speed-up from BVH is an incredible feat. Below are some time comparisons.
+        The speed-up from BVH is an incredible feat. Below are some time
+        comparisons.
       </p>
 
       <figure>
-        <img
-          src="part2.1.png"
-          width="800px"
-        />
+        <img src="part2.1.png" width="800px" />
         <figcaption>CBLucy generated in .2045s compared to 52s</figcaption>
       </figure>
 
       <figure>
-        <img
-          src="part2.2.png"
-          width="500px"
-        />
+        <img src="part2.2.png" width="500px" />
         <figcaption>Beast generated in .1375s compared to 37s</figcaption>
       </figure>
 
       <figure>
-        <img
-          src="part2.5.png"
-          width="500px"
-        />
+        <img src="part2.5.png" width="500px" />
         <figcaption>Walle generated in .3492s compared to 83s</figcaption>
       </figure>
 
       <p>
-        PARAGRAH ABOUT SPEED HERE_________________________________
+        Rendering times were significantly reduced when using BVH acceleration
+        compared to rendering without it. In scenes with moderately complex
+        geometries, the version without BVH had to check every object for each
+        ray, resulting in noticeably longer render times. With BVH, objects are
+        grouped into bounding boxes within a tree structure, allowing the
+        renderer to skip entire groups of objects when a ray misses a bounding
+        box. This reduces the number of intersection tests from O(N) to
+        approximately O(log N), leading to a substantial performance
+        improvement. The difference in times clearly demonstrates the
+        effectiveness of BVH in optimizing ray tracing workloads.
       </p>
 
       <h2>Part 3: Direct Illumination</h2>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum.
+
+      <p>
+        To estimate direct lighting, I implemented two functions: one that
+        samples directions uniformly over the hemisphere, and another that
+        samples only from light sources. The hemisphere-based function generates
+        a total of lights * ns_area_light samples. For each sample, it creates a
+        ray originating from the surface hit point and directed toward a
+        randomly chosen point on the hemisphere above the surface normal. If
+        this ray intersects another object, the incoming radiance from that
+        direction is computed using the BSDF and the emission at the
+        intersection point. This contribution is added to a running sum. After
+        all samples are processed, the accumulated radiance is divided by the
+        number of samples and the probability density function (PDF) for uniform
+        hemisphere sampling to produce the final estimate.
+      </p>
+
+      <p>
+        Direct lighting samples points on light sources and casts shadow rays
+        from the hit point to these sampled light positions. If the shadow ray
+        reaches the light unblocked, it evaluates the rendering equation for
+        that light contribution. This approach is efficient because it only
+        samples directions that potentially contribute light, unlike hemisphere
+        sampling which may waste samples on directions with no illumination. The
+        final result properly weights each sample by its probability density to
+        maintain an unbiased estimate.
+      </p>
+
+      <p>YOU ALREADY HAVE PICTURES JUST PUT THAT TOO</p>
+
+      <p>
+        Hemisphere sampling uses random directions (often cosine-weighted)
+        across the hemisphere above a surface point. While unbiased, it wastes
+        samples on directions where little light arrives. Importance sampling
+        strategically biases the random sampling toward directions that
+        contribute more to the final result - like toward light sources or based
+        on the BRDF. This reduces noise because more samples hit areas that
+        actually matter for the lighting calculation. It's still random, but the
+        randomness is weighted to be more effective. Both methods eventually
+        converge to the correct result, but importance sampling typically needs
+        fewer samples to achieve the same quality.
+      </p>
 
       <h2>Part 4: Global Illumination</h2>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum.
+      <p>
+        To achieve global (indirect) illumination, I implemented a recursive
+        path tracing algorithm that begins with the first bounce. After
+        computing the initial bounce, I used Russian roulette to
+        probabilistically terminate the path. If the path continues, I sample
+        the BSDF at the intersection point to generate a new ray direction and
+        trace it further. If this new ray intersects another object, the process
+        repeats recursively until the maximum ray depth is reached or the path
+        is terminated. At each step, the incoming radiance is weighted by the
+        BSDF and accumulated, forming a running sum that approximates the total
+        indirect lighting contribution.
+      </p>
+
+      <p>
+        Pick one scene and compare rendered views first with only direct
+        illumination, then only indirect illumination. Use 1024 samples per
+        pixel. (You will have to edit
+        PathTracer::at_least_one_bounce_radiance(...) in your code to generate
+        these views.) """STILL HAVENT DONE THIS< BUT RUN THIS ON HOME PC WHILE
+        YOU STUDY"""
+      </p>
 
       <h2>Part 5: Adaptive Sampling</h2>
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod

@@ -266,7 +266,76 @@
         maintain an unbiased estimate.
       </p>
 
-      <p>YOU ALREADY HAVE PICTURES JUST PUT THAT TOO</p>
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="bunnyHemiSphere.png" width="400px" />
+              <figcaption>Bunny Generated with Hemisphere sampling</figcaption>
+            </td>
+            <td>
+              <img src="DragonHemiSphere.png" width="400px" />
+              <figcaption>Dragon Generated with Hemisphere sampling</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="walle_64_32.png" width="400px" />
+              <figcaption>Walle generated with Light sampling</figcaption>
+            </td>
+            <td>
+              <img src="dragon_64_32.png" width="400px" />
+              <figcaption>Dragon generated with Light sampling</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>
+        In the table below, I generated a bench with varying numbers of rays per
+        light. When only one ray was shot, the shadow underneath the bench was
+        almost completely absent. The situation remained similar until reaching
+        16 samples, where the shadow became more noticeable. At 64 samples, the
+        shadow was clearly visible. This difference is due to the noise caused
+        by the limited number of light rays.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="bench_1_1.png" width="400px" />
+              <figcaption>
+                Bench with 1 light ray and 1 sample per pixel
+              </figcaption>
+            </td>
+            <td>
+              <img src="bench_1_4.png" width="400px" />
+              <figcaption>
+                Bench with 4 light rays and 1 sample per pixel
+              </figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bench_1_16.png" width="400px" />
+              <figcaption>
+                Bench with 16 light rays and 1 sample per pixel
+              </figcaption>
+            </td>
+            <td>
+              <img src="bench_1_64.png" width="400px" />
+              <figcaption>
+                Bench with 64 light rays and 1 sample per pixel
+              </figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
 
       <p>
         Hemisphere sampling uses random directions (often cosine-weighted)
@@ -295,23 +364,314 @@
         indirect lighting contribution.
       </p>
 
+      <figure>
+        <img src="blob1024_16.png" width="500px" />
+        <figcaption>
+          Blob generated with max_ray_depth = 5, 1024 samples per pixel, and 16
+          rays per light
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="spheres1024_16.png" width="500px" />
+        <figcaption>
+          Spheres generated with max_ray_depth = 5, 1024 samples per pixel, and
+          16 rays per light
+        </figcaption>
+      </figure>
+
       <p>
-        Pick one scene and compare rendered views first with only direct
-        illumination, then only indirect illumination. Use 1024 samples per
-        pixel. (You will have to edit
-        PathTracer::at_least_one_bounce_radiance(...) in your code to generate
-        these views.) """STILL HAVENT DONE THIS< BUT RUN THIS ON HOME PC WHILE
-        YOU STUDY"""
+        From the two examples above, we can see that indirect lighting doesn't
+        contribute much until the scene becomes more complex. For example, the
+        blob shows no light bleeding because it is the only object in the scene.
+        In contrast, the spheres exhibit beautiful color blending on the roof,
+        floor, and the spheres themselves. These subtle details make the scene
+        appear much more realistic and lively.
       </p>
 
+      <figure>
+        <img src="spheres_1024_16_directonly.png" width="500px" />
+        <figcaption>
+          Spheres generated with s=1024 and l=16, but with direct lighting only.
+        </figcaption>
+      </figure>
+
+      <figure>
+        <img src="spheres_1024_16_indirectonly.png" width="500px" />
+        <figcaption>
+          Spheres generated with s=1024 and l=16, but with indirect lighting
+          only.
+        </figcaption>
+      </figure>
+
+      <p>
+        Similar to before, with only direct lighting, the scene appears
+        extremely bland and flat. In contrast, the scene with global
+        illumination feels much more alive, with details brought out far more
+        clearly.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="bunny_m0_1024.png" width="400px" />
+              <figcaption>Bunny with 0th bounce only</figcaption>
+            </td>
+            <td>
+              <img src="bunny_m0o1_1024.png" width="400px" />
+              <figcaption>Bunny with up to 0th bounce</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m1_1024.png" width="400px" />
+              <figcaption>Bunny with 1st bounce only (direct)</figcaption>
+            </td>
+            <td>
+              <img src="bunny_m1o1_1024.png" width="400px" />
+              <figcaption>Bunny with up to 1st bounce (direct)</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m2_1024.png" width="400px" />
+              <figcaption>Bunny with 2nd bounce only</figcaption>
+            </td>
+            <td>
+              <img src="bunny_m2o1_1024.png" width="400px" />
+              <figcaption>Bunny with up to 2nd bounce</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m3_1024.png" width="400px" />
+              <figcaption>Bunny with 3rd bounce only</figcaption>
+            </td>
+            <td>
+              <img src="bunny_m3o1_1024.png" width="400px" />
+              <figcaption>Bunny with up to 3rd bounce</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m4_1024.png" width="400px" />
+              <figcaption>Bunny with 4th bounce only</figcaption>
+            </td>
+            <td>
+              <img src="bunny_m4o1_1024.png" width="400px" />
+              <figcaption>Bunny with up to 4th bounce</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m5_1024.png" width="400px" />
+              <figcaption>Bunny with 5th bounce only</figcaption>
+            </td>
+            <td>
+              <img src="bunny_m5o1_1024.png" width="400px" />
+              <figcaption>Bunny with up to 5th bounce</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>
+        Looking at the second and third bounces above, they may seem
+        insignificant at first, but the color blending on the bunny comes
+        primarily from these two bounces. They are the main contributors to
+        indirect lighting, as anything beyond three bounces becomes too dark to
+        have a noticeable effect.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="bunny_m0o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 0th bounce & Russian Roulette
+              </figcaption>
+            </td>
+            <td>
+              <img src="bunny_m1o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 1st bounce (direct) & Russian Roulette
+              </figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m2o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 2nd bounce & Russian Roulette
+              </figcaption>
+            </td>
+            <td>
+              <img src="bunny_m3o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 3rd bounce & Russian Roulette
+              </figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m4o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 4th bounce & Russian Roulette
+              </figcaption>
+            </td>
+            <td>
+              <img src="bunny_m5o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 5th bounce & Russian Roulette
+              </figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bunny_m100o1_1024.png" width="400px" />
+              <figcaption>
+                Bunny with up to 100th bounce & Russian Roulette
+              </figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>
+        Although the photos above look very similar to those without the Russian
+        roulette terminator, the difference lies in the time they took to
+        render. To achieve roughly similar results in the 5-bounce image, the
+        normal algorithm took over 50 minutes, while the Russian roulette
+        version took about 20 minutes. This speed-up is due to random
+        termination, which resulted in far fewer iterations.
+      </p>
+
+      <p>
+        The images below show the bench scene rendered at various
+        samples-per-pixel rates. For each render, the light ray count was
+        clamped to 4 and the max_ray_depth was set to 5. As the sample rate
+        increases, the noise gradually decreases. By 1024 samples, the image
+        appears practically noiseless.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="bench1_4.png" width="400px" />
+              <figcaption>Bench with 1 sample per pixel</figcaption>
+            </td>
+            <td>
+              <img src="bench2_4.png" width="400px" />
+              <figcaption>Bench with 2 samples per pixel</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bench4_4.png" width="400px" />
+              <figcaption>Bench with 4 samples per pixel</figcaption>
+            </td>
+            <td>
+              <img src="bench8_4.png" width="400px" />
+              <figcaption>Bench with 8 samples per pixel</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bench16_4.png" width="400px" />
+              <figcaption>Bench with 16 samples per pixel</figcaption>
+            </td>
+            <td>
+              <img src="bench64_4.png" width="400px" />
+              <figcaption>Bench with 64 samples per pixel</figcaption>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="bench1024_4.png" width="400px" />
+              <figcaption>Bench with 1024 samples per pixel</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
       <h2>Part 5: Adaptive Sampling</h2>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum.
+
+      <p>
+        Adaptive sampling is a method used to avoid wasting time on pixels that
+        have already reached a certain noise threshold. Monte Carlo integration
+        produces random noise whose variance decreases proportionally to 1/N1/N,
+        where NN is the number of samples. Some pixels converge to a stable
+        value much faster than others; in such cases, the renderer can stop
+        sampling those pixels and redirect effort toward pixels that still
+        require more work. This approach produces a clean, high-quality image in
+        less rendering time.
+      </p>
+
+      <p>
+        My implementation works by taking samples in batches for each pixel (set
+        to 64 in the examples below). After each batch, I calculate the mean
+        brightness using the illuminance and determine the standard deviation to
+        compute the 95% confidence interval width. If the relative noise falls
+        below the maxTolerance (set to 0.05), sampling for that pixel stops, and
+        the renderer moves on to the next pixel. Finally, the averaged color and
+        the actual sample count are stored.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="bunny5.png" width="400px" />
+              <figcaption>
+                Bunny with 2048 max samples per pixel and adaptive sampling
+              </figcaption>
+            </td>
+            <td>
+              <img src="bunny5_rate.png" width="400px" />
+              <figcaption>Scene Sampling rate</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <table
+          style="width: 100%; text-align: center; border-collapse: collapse"
+        >
+          <tr>
+            <td>
+              <img src="spheres5.png" width="400px" />
+              <figcaption>
+                Spheres with 2048 max samples per pixel and adaptive sampling
+              </figcaption>
+            </td>
+            <td>
+              <img src="spheres5_rate.png" width="400px" />
+              <figcaption>Scene Sampling rate</figcaption>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p>
+        In the photos above, we can see that areas with soft shadows required
+        significantly more sampling. This aligns with our earlier observation
+        that the bench had the most noise underneath—precisely where the soft
+        shadows were. In contrast, regions such as the walls and floor, where
+        there is little visual complexity, required relatively few samples to
+        converge.
+      </p>
     </div>
   </body>
 </html>
